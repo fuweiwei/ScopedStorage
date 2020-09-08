@@ -131,8 +131,9 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     } catch (IOException e) {
                         e.printStackTrace();
+                    }finally {
+                        bitmap.recycle();
                     }
-
                 }
             }
         });
@@ -208,9 +209,8 @@ public class MainActivity extends AppCompatActivity {
         mBtnOutsidePublicFileLook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("application/pdf");
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
                 startActivityForResult(intent, FILE_REQUEST_CODE);
             }
         });
@@ -249,6 +249,17 @@ public class MainActivity extends AppCompatActivity {
             if (data != null) {
                 uri = data.getData();
                 Log.i(TAG, "Uri: " + uri.toString());
+
+                //裁剪
+                Intent intent = new Intent("com.android.camera.action.CROP");
+                intent.setDataAndType(uri, "image/*");
+                intent. putExtra("crop", "true");
+                intent.putExtra("aspectX", 1)  ;        // aspectX aspectY 是宽高的比例
+                intent.putExtra("aspectY", 1);
+                intent.putExtra("outputX", 150); // outputX outputY 是裁剪图片宽高
+                intent.putExtra("outputY", 150);
+                intent.putExtra("return-data", true);
+                startActivityForResult(intent, 111);
             }
         }
     }
